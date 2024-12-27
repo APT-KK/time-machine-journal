@@ -1,11 +1,11 @@
 import React from 'react';
 
-function LoadingCard() {
+const LoadingCard = () => {
   return (
-    <div className="entry-card loading-shimmer">
-      <div style={{ height: '100px' }}></div>
+    <div className="bg-white p-4 rounded-lg shadow-sm animate-pulse">
+      <div className="h-24 bg-gray-200 rounded"></div>
     </div>
   );
-}
+};
 
 export default LoadingCard;
