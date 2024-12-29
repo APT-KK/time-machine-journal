@@ -17,12 +17,19 @@ const Login = () => {
   }
 
   try {
-    const response = await fetch("http://localhost:8000/api/auth/login", {
+    const response = await fetch("http://localhost:8001/api/auth/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json",
+        "Accept": "application/json"
+       },
       body: JSON.stringify({ email, password })
     });
     
+    // Check if the response is JSON
+    const contentType = response.headers.get("Content-Type");
+    if (!contentType || !contentType.includes("application/json")) {
+      throw new Error("Invalid response format");
+    }
     const data = await response.json();
 
     if (response.ok) {
@@ -39,7 +46,7 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <h1 className="mb-4 text-2xl font-bold text-center text-gray-700">Signup:</h1>
+        <h1 className="mb-4 text-2xl font-bold text-center text-gray-700">Login :</h1>
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <input

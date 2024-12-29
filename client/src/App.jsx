@@ -1,24 +1,17 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
-import Hero from './components/hero';
-import Features from './components/Features';
-import JournalInterface from './components/JournalInterface';
-import CallToAction from './components/CalltoAction';
+import Home from './pages/home';
+import Signup from './pages/signup';
+import Login from './pages/login';
 
 function App() {
-  console.log("App component rendering");
+  console.log("App component is rendering");
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={
-          <main>
-            <Hero />
-            <Features />
-            <JournalInterface />
-            <CallToAction />
-          </main>
-        } />
+        <Route path="/" element={<Home /> } />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element= {<Signup />} />
       </Routes>
     </BrowserRouter>
   );

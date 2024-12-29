@@ -1,15 +1,32 @@
 const express = require('express');
-
-const port = 8000;
+const cors = require('cors');
+const authRouter = require('./Routes/AuthRouter');
+const port = 8001;
 const app = express();
+require('./Models/DataBase');
 
-// Middleware 
+// Middlewares
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 
 // routes
 app.get('/', (req, res) => {
     res.send('Welcome to server - backend!');
+});
+
+// Mount the auth routes at /api/auth
+app.use('/api/auth', authRouter);
+
+// Error handling
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke internally - My Bad!');
 });
 
 // Listen

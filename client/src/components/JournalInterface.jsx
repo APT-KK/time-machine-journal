@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, SearchIcon } from 'lucide-react';
 import { recentEntries } from '../data/sampleData';
 import LoadingCard from './LoadingCard';
 
@@ -29,11 +29,11 @@ const JournalInterface = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search Entry.."
                 className="w-56 h-10 px-4 border-2 border-black focus:outline-none focus:border-black focus:shadow-[-5px_-5px_0px_black] transition-all duration-200"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2">
-                {/* Search icon */}
+                {<SearchIcon className="w-5 h-5" />}
               </span>
             </div>
             <button className="bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:-translate-y-1 transition-transform">

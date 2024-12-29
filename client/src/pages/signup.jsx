@@ -11,14 +11,14 @@ const handleSignUp = async (e) => {
   e.preventDefault();
   // API call to backend 
   try {
-    const response = await fetch("http://localhost:8000/api/signup", {
+    const response = await fetch("http://localhost:8001/api/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password })
     });
     
     if (response.ok) {
-      Navigate("/login");  
+      Navigate("/");  
     }
 
   } catch (error) {
