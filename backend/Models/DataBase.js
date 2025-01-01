@@ -1,20 +1,27 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
-//Loading environment variables
 dotenv.config();
 
-//MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI ,
-    {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log('MongoDB Connected Successfully!');
+        
+        mongoose.connection.on('error', err => {
+            console.error('MongoDB Runtime Error:', err);
+        });
+
+        mongoose.connection.on('disconnected', () => {
+            console.log('MongoDB Disconnected');
+        });
+
+    } catch (error) {
+        console.error('MongoDB Connection Error:', error);
+        process.exit(1);
     }
-).then(() => {
-    console.log('MongoDB Connected!');
-}).catch((err) => {
-    console.log('MongoDB errored out!' , err);
-});
+};
+
+connectDB();
 
 module.exports = mongoose;
-

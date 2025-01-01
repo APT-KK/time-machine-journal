@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Map, Calendar, Cloud, Heart, BotMessageSquare } from 'lucide-react';
+import { Map, Calendar, Cloud, Heart, BotMessageSquare  , NotebookText} from 'lucide-react';
 
 const Features = () => {
   const navigate = useNavigate();
@@ -34,6 +34,12 @@ const Features = () => {
       title: "Personalized AI Chat Bot",
       description: "Ask questions about your previous entries.",
       path: '/chat-bot'
+    },
+    {
+      icon: < NotebookText className="w-12 h-12 text-primary" />,
+      title: "Journal Entry",
+      description: "Write your journal entry.",
+      path: '/journal-entry'
     }
   ];
 

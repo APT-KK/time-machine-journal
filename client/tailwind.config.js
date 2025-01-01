@@ -9,6 +9,8 @@ module.exports = {
           primary: '#2414d0d0',
           'primary-light': '#6366f1',
           'primary-dark': '#3730a3',
+          'gradient-start': '#0ED2F7',
+          'gradient-end': '#B224EF',
         },
         animation: {
           'bounce-slow': 'bounce 3s linear infinite',
