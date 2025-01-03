@@ -9,11 +9,12 @@ const Navigate = useNavigate();
 
 const handleSignUp = async (e) => {
   e.preventDefault();
-  // API call to backend 
+  
   try {
     const response = await fetch("http://localhost:8001/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials : 'include',
       body: JSON.stringify({ username, email, password })
     });
     

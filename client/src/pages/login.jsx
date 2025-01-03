@@ -9,7 +9,6 @@ const Login = () => {
 
   const handleLogin = async (e) => {
   e.preventDefault();
-  // API call to backend 
 
   if (!email || !password) {
     setError("All fields are required");
@@ -19,29 +18,26 @@ const Login = () => {
   try {
     const response = await fetch("http://localhost:8001/api/auth/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json",
+      headers: { 
+        "Content-Type": "application/json",
         "Accept": "application/json"
-       },
+      },
+      credentials: 'include',
       body: JSON.stringify({ email, password })
     });
     
-    // Check if the response is JSON
-    const contentType = response.headers.get("Content-Type");
-    if (!contentType || !contentType.includes("application/json")) {
-      throw new Error("Invalid response format");
-    }
     const data = await response.json();
 
     if (response.ok) {
-      localStorage.setItem("token", data.token);
-      console.log("Login successful");
       navigate("/");  
+    } else {
+      console.error("Login failed:", data.message);
     }
 
   } catch (error) {
     console.error("Login failed:", error);
   }
-};
+ };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

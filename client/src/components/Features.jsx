@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Map, Calendar, Cloud, Heart, BotMessageSquare  , NotebookText} from 'lucide-react';
+import { Map, Calendar, Cloud, Heart, BotMessageSquare  , NotebookText , NotebookPen } from 'lucide-react';
 
 const Features = () => {
   const navigate = useNavigate();
@@ -36,10 +36,16 @@ const Features = () => {
       path: '/chat-bot'
     },
     {
-      icon: < NotebookText className="w-12 h-12 text-primary" />,
+      icon: < NotebookPen className="w-12 h-12 text-primary" />,
       title: "Journal Entry",
       description: "Write your journal entry.",
       path: '/journal-entry'
+    },
+    {
+      icon: < NotebookText className="w-12 h-12 text-primary" />,
+      title: "Display Entries",
+      description: "Display your journal entries.",
+      path: '/display-entries'
     }
   ];
 

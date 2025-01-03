@@ -11,9 +11,7 @@ const Hero = () => {
           Take the opportunity to document your experiences, carefully tracking your moods and emotions along the way.
           So, gather your thoughts and start your adventure — the past awaits!
         </p>
-        {/* <button className="bg-white text-[#2414d0d0] px-4 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-all animate-slideUp hover:-translate-y-1">
-          Sign Up
-        </button> */}
+
       </div>      
     </div>
   </section>

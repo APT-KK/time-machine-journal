@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const authRouter = require('./Routes/AuthRouter');
+const cookieParser = require('cookie-parser');
 const port = 8001;
 const app = express();
 require('./Models/DataBase');
@@ -14,6 +15,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // routes
 app.get('/', (req, res) => {
