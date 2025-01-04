@@ -3,6 +3,7 @@ import { Link , useNavigate } from 'react-router-dom';
 import Hero from '../components/hero';
 import Features from '../components/Features';
 import CallToAction from '../components/CalltoAction';
+import Default from '../components/Default';
 
 
 const Home = () => {
@@ -12,7 +13,7 @@ const Home = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("http://localhost:8001/api/auth/verify", {
+        const response = await fetch("http://localhost:8000/api/auth/verify", {
           credentials : 'include' ,
       });
         setIsAuthenticated(response.ok);
@@ -27,7 +28,7 @@ const Home = () => {
 
    const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:8001/api/auth/logout", {
+      const response = await fetch("http://localhost:8000/api/auth/logout", {
         method: "POST",
         credentials: 'include'
      });
@@ -40,8 +41,8 @@ const Home = () => {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <nav className= "bg-white p-4 shadow">
-        <div className="flex justify-end">
+      <nav className= " p-4 shadow">
+        <div className="flex justify-end ">
          { isAuthenticated ? (
             <button
             onClick={handleLogout}
@@ -69,7 +70,7 @@ const Home = () => {
         </div>
       </nav>
       <Hero />
-       {isAuthenticated && <Features /> }
+       {isAuthenticated ? <Features /> : <Default />}
       <CallToAction />
     </main>
   );

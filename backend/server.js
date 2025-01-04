@@ -1,14 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const authRouter = require('./Routes/AuthRouter');
+const entryRouter = require('./Routes/entryRouter');
 const cookieParser = require('cookie-parser');
-const port = 8001;
+const port = 8000;
 const app = express();
+
 require('./Models/DataBase');
+
+require('dotenv').config();
+
 
 // Middlewares
 app.use(cors({
-    origin: 'http://localhost:5174',
+    origin: 'http://localhost:5175',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -24,6 +29,8 @@ app.get('/', (req, res) => {
 
 
 app.use('/api/auth', authRouter);
+
+app.use('/api/entries', entryRouter);
 
 // Error handling
 app.use((err, req, res, next) => {

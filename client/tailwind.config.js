@@ -5,6 +5,11 @@ module.exports = {
     ],
     theme: {
       extend: {
+        
+          backgroundImage: {
+            'custom-gradient': 'linear-gradient(135deg, #FFA8A8 10%, #FCFF00 100%)',
+          },
+      
         colors: {
           primary: '#2414d0d0',
           'primary-light': '#6366f1',
