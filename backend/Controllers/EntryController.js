@@ -8,15 +8,22 @@ const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY 
 });
 
-const analyzeTextMood = async (content) => {
+async function analyzeTextMood (content)  {
     try {
 
         const completion = await groq.chat.completions.create({
-            messages: [
+            messages: [ 
+                {
+                    role: "system",
+                    content:"1) You are an emotional analysis assistant specialized in detecting moods and emotional states from text. Your primary function is to analyze the emotional undertones in user messages.\n" +
+                            "2) You must respond with exactly one word that best captures the dominant emotion or mood. Choose from emotions like: happy, sad, angry, excited, nervous, confused, neutral, etc.\n" +
+                            "3) If multiple emotions are present, identify the strongest or most prominent one.\n" +
+                            "4) If the emotional state is unclear or ambiguous, default to 'neutral'."
+                },
                 {
                     role: "user",
-                    content: `Analyze the following text and describe the mood in a single word : "${content}"`
-                }
+                    content: `Analyze the following text : "${content}"`
+                },
             ],
             model: "llama-3.3-70b-versatile",
         });
@@ -29,7 +36,7 @@ const analyzeTextMood = async (content) => {
     }
 };
 
-const createEntry = async (req, res) => {
+async function createEntry (req, res) {
     try {
         const { title , location , date , description} = req.body;
         const userId = req.user._id;
@@ -66,7 +73,7 @@ const createEntry = async (req, res) => {
     }
 };
 
-const getEntries = async (req,res) => {
+async function getEntries (req,res) {
     try {
         const userId = req.user._id;
         const entries = await Entry.find({userId}).sort({date: -1}).select('-__v');
