@@ -5,6 +5,7 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import { useNavigate } from 'react-router-dom';
+import { Trash, Edit } from 'lucide-react';
 
 const DisplayEntries = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const DisplayEntries = () => {
     fetchEntries();
   },[]);
 
-  const fetchEntries = async () => {
+  async function fetchEntries () {
     try {
       const response = await fetch ('http://localhost:8000/api/entries', {
         method: 'GET',  
@@ -22,7 +23,7 @@ const DisplayEntries = () => {
       });
 
       if(!response.ok) {
-        throw new Error('Failed to fetch entries');
+        console.error('Failed to fetch entries');
       }
 
       const data = await response.json();
@@ -32,6 +33,30 @@ const DisplayEntries = () => {
       alert('Failed to fetch entries. Please try again!');
     }
   };
+
+  async function handleDelete (id) {
+    try {
+      const response = await fetch (`http://localhost:8000/api/entries/${id}`, {
+        credentials: 'include',
+        method: 'DELETE'
+    });
+
+      if(!response.ok) {
+        console.error('Failed to delete entry!');
+      }
+
+      setEntries((prevEntries) => prevEntries.filter((entry) => entry._id !== id));
+      alert('Entry deleted successfully!');
+
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to delete entry. Please try again!');
+    }
+  };
+
+  const  handleUpdate = (entryId) => {
+   navigate(`/journal-entry/${entryId}`);
+    };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#0ED2F7] to-[#B2FEFA] p-6">
@@ -64,6 +89,18 @@ const DisplayEntries = () => {
                   <span>{entry.location}</span>
                   <span>•</span>
                   <span>{new Date(entry.date).toLocaleDateString()}</span>
+                  <div className="flex gap-3">
+                  <button title='update entry' 
+                  onClick={() => handleUpdate(entry._id)}
+                  className="text-blue-600 hover:text-blue-800">
+                    <Edit />
+                  </button>
+                  <button title='delete entry' 
+                  onClick={() => handleDelete(entry._id)}
+                  className="text-red-600 hover:text-red-800">
+                    <Trash />
+                  </button>
+                  </div>
                 </div>
                 <div className="mt-2 text-gray-800">
                   <ReactMarkdown className="prose" remarkPlugins = {[remarkGfm, remarkBreaks , remarkFrontmatter]}

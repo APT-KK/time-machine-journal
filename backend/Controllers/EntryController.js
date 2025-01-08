@@ -88,7 +88,88 @@ async function getEntries (req,res) {
     }
 }
 
+async function getEntryById (req,res) {
+    try {
+        const { id } = req.params;
+        const userId = req.user._id;
+
+        const entry = await Entry.findOne({_id: id , userId})
+        .select('-__v');
+
+        if(!entry) {
+            return res.status(404).json({message : 'Entry not found'});
+        }
+
+        res.status(200).json({ entry });
+
+    } catch (error) {
+        console.error("Error fetching entry:", error);
+        res.status(500).json({ message: `Internal server error: ${error.message}` });
+    }
+};
+
+async function deleteEntry (req,res) {
+    try {
+        const { id } = req.params;
+        const userId = req.user._id;
+
+        const entry = await Entry.findOneAndDelete({ _id: id , userId});
+
+        if(!entry) {
+            return res.status(404).json({message : 'Entry not found'});
+        };
+
+        await User.findByIdAndUpdate(
+            userId,
+            { $pull: { entries: id } },
+            { new: true }
+          );
+        
+        res.status(200).json({ message: 'Entry deleted successfully!' });
+        
+    } catch (error) {
+        console.error("Error deleting entry:", error);
+        res.status(500).json({ message: `Internal server error: ${error.message}` });
+    }
+}
+
+async function updateEntry (req,res) {
+    try {
+        const { id } = req.params;
+        const userId = req.user._id;
+        const { title, date , location , description } = req.body;
+
+        const mood = await analyzeTextMood(description);
+
+        const entry = await Entry.findOneAndUpdate(
+            { _id: id , userId},
+            {
+                title,
+                content: description,
+                location,
+                date,
+                mood
+            },
+            {new:true}
+        ); 
+
+        if(!entry){
+            return res.status(404).json({message: 'Entry not found'});
+        }
+
+        return res.status(200).json({message: 'Entry updated successfully' ,
+         entry
+        });
+
+    } catch (error) {
+        console.error("Error updating entry:", error);
+        res.status(500).json({ message: `Internal server error: ${error.message}` });
+    }
+}
 module.exports = {
     createEntry,
-    getEntries
+    getEntries,
+    getEntryById,
+    deleteEntry,
+    updateEntry
 };

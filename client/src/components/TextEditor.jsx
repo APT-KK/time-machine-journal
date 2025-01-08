@@ -1,18 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import { Bold, Italic, Strikethrough, Code, List, Quote, Link, Image, Heading, CheckSquare } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , useParams } from 'react-router-dom';
 
 const TextEditor = ( { addEntry } ) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [location, setLocation] = useState('');
-  const [date, setDate] = useState('');
+  
   const navigate = useNavigate();
+  const { entryId } = useParams();
+  
+  const [formData , setFormData] = useState( () => {
+    const savedData = localStorage.getItem(`draft-${entryId || 'new' }`);
+    if(savedData){
+      return JSON.parse(savedData);
+    }
+    return {
+      title: '',
+      location: '',
+      date: new Date().toISOString().split('T')[0],
+      description: ''
+    };
+
+  });
+  
+  const { title, location, date, description } = formData;
+
+  useEffect( () => {
+    const draftKey = `draft-${entryId || 'new'}`;
+    localStorage.setItem(draftKey, JSON.stringify(formData));
+  }, [formData, entryId]);
+
+  useEffect(() => {
+    if(entryId){
+      fetchEntry();
+    }
+  }, [entryId]);
+
+  const fetchEntry = async () => {
+    try {
+      const response = await fetch (`http://localhost:8000/api/entries/${entryId}`, {
+        credentials: 'include',
+        method: 'GET',
+      });
+
+      if(!response.ok){
+        console.error('Failed to fetch entry!');
+      }
+
+      const { entry } = await response.json();
+
+      const entryData = {
+        title: entry.title, 
+        location: entry.location, 
+        date: new Date(entry.date).toISOString().split('T')[0],
+        description: entry.content 
+      }
+
+      setFormData(entryData);
+      localStorage.setItem(`draft-${entryId}`, JSON.stringify(entryData));
+
+    } catch (error) {
+      console.error('Error fetching entry:', error);
+      alert('Failed to fetch entry details');
+      navigate('/display-entries');
+    }
+  }
+  const defaultLocation = () => {
+  
+    useEffect(() => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setFormData((prev) => ({
+              ...prev,
+              location: `Lat: ${latitude}, Long: ${longitude}`
+            }));
+          },         
+          (error) => {
+            console.error("Error fetching location: ", error);
+            setFormData((prev) => ({
+              ...prev,
+              location: 'Unable to fetch location'
+            }));         
+           }
+        );
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          location: 'Geolocation is not supported by this browser.'
+        }));     
+       }
+    } , []);
+  
+  };
+
+  defaultLocation();
+
+  const handleInputChange = (e) => {
+    const {name , value} = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const applyMarkdown = (startTag, endTag = startTag) => {
     const textarea = document.getElementById('description');
@@ -23,25 +117,34 @@ const TextEditor = ( { addEntry } ) => {
     const after = description.substring(end);
 
     const newContent = `${before}${startTag}${selectedText}${endTag}${after}`;
-    setDescription(newContent);
+    setFormData(prev => ({
+      ...prev,
+      description: newContent
+    }));
   };
+
 
   const handleSubmit = async () => {
    try {
-      const response = await fetch("http://localhost:8000/api/entries", {
-        method : "POST",
+      const url = entryId ? `http://localhost:8000/api/entries/${entryId}` 
+      : 'http://localhost:8000/api/entries';
+
+      const method = entryId ? 'PUT' : 'POST';
+
+      const response = await fetch (url, {
+        method,
         credentials: 'include',
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title , location , date , description}),
+        body: JSON.stringify( formData ),
       });
 
       if (!response.ok) {
-        throw new Error ('Failed to save the entry');
+        console.error('Failed to save the entry');
       }
 
-      const result = await response.json();
+      localStorage.removeItem(`draft-${entryId || 'new'}`);
       navigate('/display-entries');
 
   } catch (error) {
@@ -49,7 +152,6 @@ const TextEditor = ( { addEntry } ) => {
     alert('Failed to save the entry . Please try again!');
   }
 };
-
   return (
     <div className=" mx-auto p-4 font-sans min-h-screen bg-gradient-to-r from-[#0ED2F7] to-[#B2FEFA] ">
      <div className="max-w-[80vw] mx-auto">
@@ -61,8 +163,9 @@ const TextEditor = ( { addEntry } ) => {
           <input
             type="text"
             id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            name="title"
+            value={formData.title || ""}
+            onChange={handleInputChange}
             className="block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
             placeholder="Enter title..."
           />
@@ -74,8 +177,9 @@ const TextEditor = ( { addEntry } ) => {
           <input
             type="text"
             id="location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            name="location"
+            value={formData.location || ""}
+            onChange={handleInputChange}
             className="block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
             placeholder="Enter title..."
           />
@@ -87,8 +191,9 @@ const TextEditor = ( { addEntry } ) => {
           <input
             type="date"
             id="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
+            name="date"
+            value={formData.date || ""}
+            onChange={handleInputChange}
             className="block  border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
             required
           />
@@ -113,8 +218,9 @@ const TextEditor = ( { addEntry } ) => {
           <div className="flex space-x-4">
             <textarea
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formData.description || ""}
+              name="description"
+              onChange={handleInputChange}
               className="w-1/2 h-[40vh] p-4 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
               placeholder="Enter the description..."
             />
