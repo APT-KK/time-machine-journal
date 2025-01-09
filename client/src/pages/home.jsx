@@ -4,36 +4,22 @@ import Hero from '../components/hero';
 import Features from '../components/Features';
 import CallToAction from '../components/CalltoAction';
 import Default from '../components/Default';
+import { useAuth } from '../context/AuthContext';
 
 
 const Home = () => {
-  const [isAuthenticated , setIsAuthenticated] = useState(false);
+  const {isAuthenticated , setIsAuthenticated} = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/api/auth/verify", {
-          credentials : 'include' ,
-      });
-        setIsAuthenticated(response.ok);
-      } catch (error) {
-        console.error("Error in checking authentication:", error);
-        setIsAuthenticated(false);
-     } 
-    };
-
-    checkAuth();
-   } , []);
 
    const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/auth/logout", {
+      const response = await fetch("http://localhost:8001/api/auth/logout", {
         method: "POST",
         credentials: 'include'
      });
      setIsAuthenticated(false);
-     navigate('/');
+     navigate('/' , { replace: true});
+
     } catch (error) {
       console.error("Error in logging out:", error);
     }

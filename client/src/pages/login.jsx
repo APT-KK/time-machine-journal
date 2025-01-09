@@ -1,10 +1,12 @@
 import React  , {useState} from "react";
 import { Link , useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const {setIsAuthenticated} = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -16,7 +18,7 @@ const Login = () => {
   }
 
   try {
-    const response = await fetch("http://localhost:8000/api/auth/login", {
+    const response = await fetch("http://localhost:8001/api/auth/login", {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
@@ -29,7 +31,8 @@ const Login = () => {
     const data = await response.json();
 
     if (response.ok) {
-      navigate("/");  
+      setIsAuthenticated(true);
+      navigate("/" , {replace: true});  
     } else {
       console.error("Login failed:", data.message);
     }

@@ -41,7 +41,7 @@ const TextEditor = ( { addEntry } ) => {
 
   const fetchEntry = async () => {
     try {
-      const response = await fetch (`http://localhost:8000/api/entries/${entryId}`, {
+      const response = await fetch (`http://localhost:8001/api/entries/${entryId}`, {
         credentials: 'include',
         method: 'GET',
       });
@@ -126,8 +126,8 @@ const TextEditor = ( { addEntry } ) => {
 
   const handleSubmit = async () => {
    try {
-      const url = entryId ? `http://localhost:8000/api/entries/${entryId}` 
-      : 'http://localhost:8000/api/entries';
+      const url = entryId ? `http://localhost:8001/api/entries/${entryId}` 
+      : 'http://localhost:8001/api/entries';
 
       const method = entryId ? 'PUT' : 'POST';
 

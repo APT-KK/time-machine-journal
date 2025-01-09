@@ -6,10 +6,12 @@ import Signup from './pages/signup';
 import Entry from './pages/textEditor';
 import MoodTracking from './pages/moodTracking';
 import DisplayEntries from './pages/DisplayEntries';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
 
   return (
+    <AuthProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -20,6 +22,7 @@ function App() {
         <Route path="/mood-tracking" element={<MoodTracking  />} />
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
 

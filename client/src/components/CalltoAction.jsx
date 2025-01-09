@@ -1,33 +1,12 @@
 import React , {useEffect , useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const CallToAction = () => {
   const navigate = useNavigate();
-  const [isAuthenticated , setIsAuthenticated] = useState(false);
- 
-  const checkAuth = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/api/auth/verify", {
-        credentials : 'include' ,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-    });
-      setIsAuthenticated(response.ok);
-      
-    } catch (error) {
-      console.error("Error in checking authentication:", error);
-      setIsAuthenticated(false);
-      return false;
-   } 
-  };
-
-  useEffect(() => {
-      checkAuth();
-     } , []);
+  const {isAuthenticated} = useAuth();
 
   const handleCreateJournal = () => {
-  
     if (isAuthenticated) {
       navigate('/journal-entry');
     } else {

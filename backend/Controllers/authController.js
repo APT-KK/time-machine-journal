@@ -35,7 +35,7 @@ const Signup = async (req, res) => {
         res.cookie('jwt' , token , {
           httpOnly : true,
           secure: process.env.NODE_ENV === 'production', // currently its development so it will be false , change it when deploying
-          sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // found while debugging (warning)
+          sameSite: process.env.NODE_ENV === 'lax', // found while debugging (warning)
           maxAge : 24 * 60 * 60 * 1000   
         });
 
@@ -75,7 +75,7 @@ const login = async (req, res) => {
         res.cookie('jwt', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            sameSite: process.env.NODE_ENV === 'lax',
             maxAge: 24 * 60 * 60 * 1000
         });
         
