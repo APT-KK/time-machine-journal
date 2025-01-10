@@ -3,7 +3,7 @@ const cors = require('cors');
 const authRouter = require('./Routes/AuthRouter');
 const entryRouter = require('./Routes/entryRouter');
 const cookieParser = require('cookie-parser');
-const port = 8001;
+const port = 8000;
 const app = express();
 
 require('./Models/DataBase');

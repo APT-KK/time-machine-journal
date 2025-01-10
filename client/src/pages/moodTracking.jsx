@@ -13,7 +13,7 @@ const MoodTracking = () => {
 
   const fetchEntries = async () => {
     try {
-      const response = await fetch ('http://localhost:8001/api/entries', {
+      const response = await fetch ('http://localhost:8000/api/entries', {
         credentials: 'include',
         method: 'GET',
       });

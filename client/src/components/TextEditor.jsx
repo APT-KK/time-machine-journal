@@ -4,10 +4,10 @@ import rehypeRaw from 'rehype-raw';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
-import { Bold, Italic, Strikethrough, Code, List, Quote, Link, Image, Heading, CheckSquare } from 'lucide-react';
+import { Bold, Italic, Strikethrough, List, Quote, Link, Image, Heading, Square, CheckSquare } from 'lucide-react';
 import { useNavigate , useParams } from 'react-router-dom';
 
-const TextEditor = ( { addEntry } ) => {
+const TextEditor = () => {
   
   const navigate = useNavigate();
   const { entryId } = useParams();
@@ -41,7 +41,7 @@ const TextEditor = ( { addEntry } ) => {
 
   const fetchEntry = async () => {
     try {
-      const response = await fetch (`http://localhost:8001/api/entries/${entryId}`, {
+      const response = await fetch (`http://localhost:8000/api/entries/${entryId}`, {
         credentials: 'include',
         method: 'GET',
       });
@@ -126,8 +126,17 @@ const TextEditor = ( { addEntry } ) => {
 
   const handleSubmit = async () => {
    try {
-      const url = entryId ? `http://localhost:8001/api/entries/${entryId}` 
-      : 'http://localhost:8001/api/entries';
+    if (!formData.title.trim()) {
+      alert('Please fill in the title before saving.');
+      return;
+    };
+    
+    if (!formData.description.trim()) {
+      alert('Please fill in the description before saving.');
+      return;
+    }
+      const url = entryId ? `http://localhost:8000/api/entries/${entryId}` 
+      : 'http://localhost:8000/api/entries';
 
       const method = entryId ? 'PUT' : 'POST';
 
@@ -207,13 +216,14 @@ const TextEditor = ( { addEntry } ) => {
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('**', '**')}><Bold size={18} /></button>
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('_', '_')}><Italic size={18} /></button>
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('~~', '~~')}><Strikethrough size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('`', '`')}><Code size={18} /></button>
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('- ')}><List size={18} /></button>
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('> ')}><Quote size={18} /></button>
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('[', '](url)')}><Link size={18} /></button>
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('![', '](image_url)')}><Image size={18} /></button>
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('# ', '')}><Heading size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('- [ ] ', '')}><CheckSquare size={18} /></button>
+            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('- [x] ', '')}><CheckSquare size={18} /></button>
+            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('- [ ] ', '')}><Square size={18} /></button>
+
           </div>
           <div className="flex space-x-4">
             <textarea

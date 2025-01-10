@@ -17,7 +17,7 @@ const DisplayEntries = () => {
 
   async function fetchEntries () {
     try {
-      const response = await fetch ('http://localhost:8001/api/entries', {
+      const response = await fetch ('http://localhost:8000/api/entries', {
         method: 'GET',  
         credentials: 'include',
       });
@@ -36,7 +36,7 @@ const DisplayEntries = () => {
 
   async function handleDelete (id) {
     try {
-      const response = await fetch (`http://localhost:8001/api/entries/${id}`, {
+      const response = await fetch (`http://localhost:8000/api/entries/${id}`, {
         credentials: 'include',
         method: 'DELETE'
     });

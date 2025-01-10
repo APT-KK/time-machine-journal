@@ -28,7 +28,9 @@ async function analyzeTextMood (content)  {
             model: "llama-3.3-70b-versatile",
         });
 
-        return completion.choices[0]?.message?.content?.trim() || 'neutral' ;
+        res.status(200).json({
+            response: completion.choices[0]?.message?.content?.trim() || 'neutral' 
+        });
 
     } catch (error) {
         console.error('Error in analyzeTextMood:', error);

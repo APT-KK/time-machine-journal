@@ -13,7 +13,7 @@ const Home = () => {
 
    const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:8001/api/auth/logout", {
+      const response = await fetch("http://localhost:8000/api/auth/logout", {
         method: "POST",
         credentials: 'include'
      });
