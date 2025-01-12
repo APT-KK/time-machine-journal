@@ -2,9 +2,10 @@ import React , {useState , useEffect} from 'react';
 import { Link , useNavigate } from 'react-router-dom';
 import Hero from '../components/hero';
 import Features from '../components/Features';
-import CallToAction from '../components/CalltoAction';
+import CallToAction from '../components/CallToAction';
 import Default from '../components/Default';
 import { useAuth } from '../context/AuthContext';
+const PORT = 8000;
 
 
 const Home = () => {
@@ -13,7 +14,7 @@ const Home = () => {
 
    const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/auth/logout", {
+      const response = await fetch(`http://localhost:${PORT}/api/auth/logout`, {
         method: "POST",
         credentials: 'include'
      });
