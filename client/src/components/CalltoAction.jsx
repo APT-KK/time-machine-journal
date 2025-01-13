@@ -15,7 +15,7 @@ const CallToAction = () => {
   };
   
   return (
-  <section className="bg-custom-gradient py-16 text-white text-center">
+  <section className="bg-gradient-to-r from-[#FAD961] to-[#F76B1C] py-16 text-white text-center">
     <div className="container mx-auto px-8">
       <div className="max-w-xl mx-auto mt-8">
         <h2 className="text-3xl font-bold mb-4">Ready to Start Your Journey?</h2>
@@ -29,8 +29,8 @@ const CallToAction = () => {
         </button>
         <div className="mt-8 relative h-12 overflow-hidden">
           <p className="absolute w-full animate-marquee">
-            © Kabeer-Khosla 2024 .pvt ltd
-            /pvt</p>
+            © Kabeer-Khosla WOC-Project SDS-Labs
+          </p>
         </div>
         </div>
       </div>

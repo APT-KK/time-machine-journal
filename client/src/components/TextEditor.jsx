@@ -113,10 +113,13 @@ const TextEditor = () => {
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const before = description.substring(0, start);
-    const selectedText = description.substring(start, end);
+    const selectedText = description.substring(start, end).trim();
     const after = description.substring(end);
+    
+    // first trims extra white space at end of word and then add it after if needed(de-bugging)
+    const spaceAfter = after.startsWith(' ') ? '' : ' ';
 
-    const newContent = `${before}${startTag}${selectedText}${endTag}${after}`;
+    const newContent = `${before}${startTag}${selectedText}${endTag}${spaceAfter}${after}`;
     setFormData(prev => ({
       ...prev,
       description: newContent
@@ -162,9 +165,9 @@ const TextEditor = () => {
   }
 };
   return (
-    <div className=" mx-auto p-4 font-sans min-h-screen bg-gradient-to-r from-[#0ED2F7] to-[#B2FEFA] ">
-     <div className="max-w-[80vw] mx-auto">
-      <div className="bg-white shadow rounded-lg p-6">
+    <div className=" mx-auto p-8 font-sans min-h-screen bg-gradient-to-r from-[#0ED2F7] to-[#B2FEFA] ">
+     <div className="max-w-[70vw] mx-auto">
+      <div className="bg-white shadow rounded-lg p-8">
         <div className="mb-6">
           <label htmlFor="title" className="block text-lg font-medium text-gray-700 mb-2 p-2">
             Title :
@@ -212,7 +215,7 @@ const TextEditor = () => {
             Description :
             </label>
           <br /> 
-          <div className="flex items-center space-x-2 mb-4">
+          <div className="flex flex-wrap gap-2 mb-4">
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('**', '**')}><Bold size={18} /></button>
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('_', '_')}><Italic size={18} /></button>
             <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('~~', '~~')}><Strikethrough size={18} /></button>
@@ -251,13 +254,20 @@ const TextEditor = () => {
           </div>
         </div>
 
-        <div className="flex justify-end"> 
+        <div className="flex gap-2 justify-end"> 
+        <button
+            onClick={() => navigate('/')}
+            className="px-6 py-3 bg-yellow-300 text-black text-lg font-medium rounded-lg hover:bg-yellow-400 shadow"
+          >
+            Back to Home
+          </button>
           <button
             onClick={handleSubmit}
-            className="px-6 py-3 bg-yellow-300 text-black text-lg font-medium hover:bg-yellow-400 shadow"
+            className="px-6 py-3 bg-yellow-300 text-black text-lg font-medium rounded-lg hover:bg-yellow-400 shadow"
           >
             Save Entry
           </button>
+         
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import React from 'react';
 
 const Hero = () => {
   return (
-    <section className="bg-custom-gradient py-16 text-white">
+    <section className="bg-gradient-to-r from-[#FAD961] to-[#F76B1C] py-16 text-white">
     <div className="container mx-auto max-w-6xl px-8 flex justify-between">
       <div className="max-w-2xl animate-fadeIn">
         <h1 className="text-5xl font-bold mb-4 animate-slideUp">Time Machine Journal</h1>

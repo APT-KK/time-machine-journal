@@ -64,12 +64,22 @@ const DisplayEntries = () => {
         <div className="bg-white shadow rounded-lg p-6">
           <div className='flex justify-between items-center'>
           <h1 className="text-2xl font-bold mb-4">Your Entries: </h1>
-          <button
-              onClick={() => navigate('/')}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Back to Home
-            </button>
+            <button 
+               onClick={() => navigate('/')}
+                className="
+                    block
+                    px-8 py-3 
+                    m-2.5
+                    text-center
+                    text-white
+                    rounded-lg
+                    transition-all duration-500
+                    bg-gradient-to-r from-[#2BC0E4] via-[#EAECC6] to-[#2BC0E4]
+                    bg-[length:200%_auto]
+                    shadow-[0_0_20px_#eee]
+                    hover:bg-[position:right_center]">
+                  Back to Home
+                </button>
           </div>
           {entries.length === 0 ? (
             <div className="text-center py-8">
