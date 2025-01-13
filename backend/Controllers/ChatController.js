@@ -11,7 +11,7 @@ async function getChatResponse (req,res) {
       const { question } = req.body;
       const userId = req.user._id;
 
-      const entries = await Entry.find({ userId }).sort({ date: -1 });
+      const entries = await Entry.find({ userId }).sort({ date: -1 }).limit(20);
 
       const entriesContext = entries.map(entry => (
 
@@ -23,7 +23,7 @@ async function getChatResponse (req,res) {
 
       )).join('');
 
-      const completion = await groq.chat.completion
+      const completion = await groq.chat.completions
       .create({
         messages : [
             {
@@ -59,7 +59,7 @@ async function getChatResponse (req,res) {
       });
 
       res.status(200).json({
-        response: completion.choice[0]?.message?.content || "Couldn't generate the response!"
+        response: completion.choices[0]?.message?.content || "Couldn't generate the response!"
       });
 
     } catch (error) {

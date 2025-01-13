@@ -4,8 +4,8 @@ const { getChatResponse } = require('../Controllers/ChatController');
 
 const router = express.Router();
 
-app.use(verifyToken);
+router.use(verifyToken);
 
-app.post( '/question', getChatResponse);
+router.post( '/question', getChatResponse);
 
 module.exports = router;

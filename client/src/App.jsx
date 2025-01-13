@@ -7,6 +7,7 @@ import Entry from './pages/textEditor';
 import MoodTracking from './pages/moodTracking';
 import DisplayEntries from './pages/DisplayEntries';
 import { AuthProvider } from './context/AuthContext';
+import ChatBot from './pages/ChatBot';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/journal-entry/:entryId?" element={<Entry />} />
         <Route path="/display-entries" element={<DisplayEntries />} />
         <Route path="/mood-tracking" element={<MoodTracking  />} />
+        <Route path="/chat-bot" element={<ChatBot />}/>
       </Routes>
     </BrowserRouter>
     </AuthProvider>
