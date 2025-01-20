@@ -8,9 +8,11 @@ import MoodTracking from './pages/moodTracking';
 import DisplayEntries from './pages/DisplayEntries';
 import { AuthProvider } from './context/AuthContext';
 import ChatBot from './pages/ChatBot';
+import WordCloud from './pages/WordClouds';
+import InteractiveMap from './pages/InteractiveMap';
 
 function App() {
-
+  
   return (
     <AuthProvider>
     <BrowserRouter>
@@ -22,6 +24,8 @@ function App() {
         <Route path="/display-entries" element={<DisplayEntries />} />
         <Route path="/mood-tracking" element={<MoodTracking  />} />
         <Route path="/chat-bot" element={<ChatBot />}/>
+        <Route path="/word-clouds" element={<WordCloud />}/>
+        <Route path="/interactive-map" element={<InteractiveMap />}/>
       </Routes>
     </BrowserRouter>
     </AuthProvider>
