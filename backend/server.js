@@ -2,7 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const authRouter = require('./Routes/AuthRouter');
 const entryRouter = require('./Routes/entryRouter');
-const BotRouter = require('./Routes/BotRouter')
+const BotRouter = require('./Routes/BotRouter');
+const wordCloudRouter = require('./Routes/wordCloudRouter');
+const mapRouter = require('./Routes/MapRouter');
 const cookieParser = require('cookie-parser');
 const port = 8000;
 const app = express();
@@ -34,6 +36,11 @@ app.use('/api/auth', authRouter);
 app.use('/api/entries', entryRouter);
 
 app.use('/api/bot', BotRouter);
+
+app.use('/api/wordcloud', wordCloudRouter);
+
+app.use('/api', mapRouter);
+
 
 // Error handling
 app.use((err, req, res, next) => {

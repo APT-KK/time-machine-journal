@@ -77,7 +77,7 @@ async function getEntries (req,res) {
     try {
         const userId = req.user._id;
         const entries = await Entry.find({userId}).sort({date: -1}).select('-__v');
-
+        res.setHeader('Content-Type', 'application/json');
         res.status(200).json(entries);
 
     } catch (error) {
