@@ -2,6 +2,7 @@ import React , {useState , useEffect} from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useNavigate } from 'react-router-dom';
+import config from '../config/config';
 
 const MoodTracking = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const MoodTracking = () => {
 
   const fetchEntries = async () => {
     try {
-      const response = await fetch ('http://localhost:8000/api/entries', {
+      const response = await fetch (`${config.BASE_URL}/api/entries`, {
         credentials: 'include',
         method: 'GET',
       });
@@ -31,66 +32,67 @@ const MoodTracking = () => {
     }
   };
 
+  const fetchMoodData = async () => {
+    try {
+      const response = await fetch(`${config.BASE_URL}/api/entries/moods`, {
+        // ... rest of fetch config
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#0ED2F7] to-[#B2FEFA] p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white shadow rounded-lg p-6">
-        <div className='flex justify-between items-center'>
-          <h1 className="text-2xl font-bold mb-4">Mood Tracking : </h1>
-          <button 
-               onClick={() => navigate('/')}
-                className="
-                    block
-                    px-8 py-3 
-                    m-2.5
-                    text-center
-                    text-white
-                    rounded-lg
-                    transition-all duration-500
-                    bg-gradient-to-r from-[#2BC0E4] via-[#EAECC6] to-[#2BC0E4]
-                    bg-[length:200%_auto]
-                    shadow-[0_0_20px_#eee]
-                    hover:bg-[position:right_center]">
-                  Back to Home
-                </button>
+    <div className="min-h-screen bg-gradient-to-r from-[#FAD961] to-[#F76B1C] p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-8">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Mood Journey
+            </h1>
+            <button 
+              onClick={() => navigate('/')}
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold 
+                       hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg">
+              Back to Home
+            </button>
           </div>
-          
+
           {entries.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-700 mb-4">No entries yet! Start tracking to get the mood analysis!</p>
+            <div className="text-center py-12">
+              <p className="text-xl text-gray-600 mb-6">Track your emotional journey through journaling</p>
               <button 
                 onClick={() => navigate('/journal-entry')}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Create New Entry
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold 
+                         hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                Start Tracking
               </button>
             </div>
           ) : (
-            entries.map((entry) => (
-              <div
-                key={entry._id}
-                className="bg-white p-6 rounded-lg border border-gray-300"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-xl font-semibold">{entry.title}</h3>
-                    <p className="text-sm text-gray-600">
-                      {new Date(entry.date).toLocaleDateString()} • {entry.location}
-                    </p>
+            <div className="space-y-6">
+              {entries.map((entry) => (
+                <div key={entry._id} 
+                     className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-800">{entry.title}</h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {new Date(entry.date).toLocaleDateString()} • {entry.location}
+                      </p>
+                    </div>
+                    <span className="px-4 py-2 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 
+                                   rounded-full font-medium transition-transform hover:scale-105">
+                      {entry.mood}
+                    </span>
                   </div>
-                  <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full font-medium hover:bg-blue-200 hover:translate-y-[-2px] hover:shadow transition-transform">
-                    Mood: {entry.mood}
-                  </span>
+                  <div className="mt-4 prose max-w-none">
+                    <ReactMarkdown>
+                      {entry.content.length > 40 ? `${entry.content.substring(0, 60)}...` : entry.content}
+                    </ReactMarkdown>
+                  </div>
                 </div>
-                <div className="prose max-w-none text-gray-800">
-                  <ReactMarkdown>
-                    {entry.content.length > 40
-                      ? `${entry.content.substring(0, 60)}...`
-                      : entry.content}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       </div>

@@ -5,7 +5,7 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import { useNavigate } from 'react-router-dom';
-import { Trash, Edit } from 'lucide-react';
+import { Trash, Edit, MapPin, Calendar } from 'lucide-react';
 
 const DisplayEntries = () => {
   const navigate = useNavigate();
@@ -59,67 +59,69 @@ const DisplayEntries = () => {
     };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#0ED2F7] to-[#B2FEFA] p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white shadow rounded-lg p-6">
-          <div className='flex justify-between items-center'>
-          <h1 className="text-2xl font-bold mb-4">Your Entries: </h1>
+    <div className="min-h-screen bg-gradient-to-r from-[#FAD961] to-[#F76B1C] p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-8">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Your Journal Entries
+            </h1>
             <button 
-               onClick={() => navigate('/')}
-                className="
-                    block
-                    px-8 py-3 
-                    m-2.5
-                    text-center
-                    text-white
-                    rounded-lg
-                    transition-all duration-500
-                    bg-gradient-to-r from-[#2BC0E4] via-[#EAECC6] to-[#2BC0E4]
-                    bg-[length:200%_auto]
-                    shadow-[0_0_20px_#eee]
-                    hover:bg-[position:right_center]">
-                  Back to Home
-                </button>
+              onClick={() => navigate('/')}
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold 
+                       hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg 
+                       transform hover:-translate-y-0.5">
+              Back to Home
+            </button>
           </div>
+
           {entries.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-700 mb-4">No entries yet!</p>
+            <div className="text-center py-12">
+              <p className="text-xl text-gray-600 mb-6">Start your travel journey today!</p>
               <button 
                 onClick={() => navigate('/journal-entry')}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Create New Entry
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold 
+                         hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                Create YourFirst Entry
               </button>
             </div>
           ) : (
-            entries.map((entry) => (
-              <div key={entry._id} className="mb-4 p-4 border rounded-lg bg-gray-50">
-                <h2 className="text-xl font-semibold">{entry.title}</h2>
-                <div className="flex gap-2 text-sm text-gray-600 mt-1">
-                  <span>{entry.location}</span>
-                  <span>•</span>
-                  <span>{new Date(entry.date).toLocaleDateString()}</span>
-                  <div className="flex gap-3">
-                  <button title='update entry' 
-                  onClick={() => handleUpdate(entry._id)}
-                  className="text-blue-600 hover:text-blue-800">
-                    <Edit />
-                  </button>
-                  <button title='delete entry' 
-                  onClick={() => handleDelete(entry._id)}
-                  className="text-red-600 hover:text-red-800">
-                    <Trash />
-                  </button>
+            <div className="space-y-6">
+              {entries.map((entry) => (
+                <div key={entry._id} 
+                     className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+                  <div className="flex justify-between items-start mb-4">
+                    <h2 className="text-2xl font-semibold text-gray-800">{entry.title}</h2>
+                    <div className="flex gap-3">
+                      <button onClick={() => handleUpdate(entry._id)}
+                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+                        <Edit className="w-5 h-5" />
+                      </button>
+                      <button onClick={() => handleDelete(entry._id)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors">
+                        <Trash className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 text-sm text-gray-600 mb-4">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      {entry.location}
+                    </span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      {new Date(entry.date).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="prose max-w-none">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {entry.content}
+                    </ReactMarkdown>
                   </div>
                 </div>
-                <div className="mt-2 text-gray-800">
-                  <ReactMarkdown className="prose" remarkPlugins = {[remarkGfm, remarkBreaks , remarkFrontmatter]}
-                    rehypePlugins = {[rehypeRaw]} >
-                    {entry.content}  
-                  </ReactMarkdown>
-                </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       </div>

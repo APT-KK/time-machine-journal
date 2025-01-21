@@ -26,18 +26,17 @@ const Home = () => {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Enhanced Navigation Bar */}
+      
       <nav className="bg-white/70 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo/Brand */}
+         
             <div className="flex-shrink-0">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Time Machine
+                Time Machine Journal
               </h1>
             </div>
 
-            {/* Navigation Links */}
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <button
@@ -94,18 +93,15 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* Main Content */}
+
       <div className="relative">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
-        
-        {/* Content */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>     
         <div className="relative">
           <Hero />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             {isAuthenticated ? <Features /> : <Default />}
           </div>
-          <CallToAction />
+          {isAuthenticated && <CallToAction />}
         </div>
       </div>
     </main>

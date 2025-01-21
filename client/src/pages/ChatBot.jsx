@@ -129,116 +129,127 @@ const ChatBot = () => {
     };
 
  return (
-    <div className=" mx-auto p-4 font-sans min-h-screen bg-gradient-to-r from-[#434343] to-black">
-      <div className="h-full max-w-4xl mx-auto flex flex-col p-3">
-         <header className="text-center flex flex-rows justify-between py-4">
-           <h1 className="text-4xl font-bold text-gray-400">
-             Journal Entry ChatBot :-
-           </h1>
-           <button 
-               onClick={handleNavigateHome}
-                className="
-                    block
-                    px-8 py-3
-                    m-2.5
-                    text-center
-                    text-black
-                    font-bold
-                    rounded-lg
-                    transition-all duration-500
-                    btn-grad bg-gradient-to-r from-gray-200 via-white       
-                    bg-[length:200%_auto]
-                    shadow-[0_0_15px_#eee]
-                    hover:bg-[position:right_center]">
-                  Back to Home
-                </button>
-         </header>
-
-    <div
-     ref={chatHistoryContainer}
-     className="h-[500px] overflow-y-auto mb-4 rounded-lg bg-white shadow-lg p-4 scrollbar-hide">
-        
-      {chatHistory.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-6">
-            <div className="bg-blue-50 rounded-xl p-8 max-w-2xl">
-              <h2 className="text-2xl font-bold text-blue-600 mb-4">Welcome to your personalised Chat-Bot!👋</h2>
-              <p className="text-gray-600 mb-4">
-                I'm here to help you with anything you'd like to know about yourself through the lens of your entries!
-              </p>
-              <p className="text-gray-500 mt-6 text-sm">
-                Just type your question below and press Enter or click Send!
-                <br />
-                Note: The AI only uses the last 20 entries in order to fetch you a response.
-              </p>
+    <div className="min-h-screen bg-gradient-to-r from-[#FAD961] to-[#F76B1C] p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-8">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                AI Chat Assistant
+              </h1>
+              <p className="text-gray-600 mt-2">Chat with your personal journal insights assistant</p>
             </div>
+            <button 
+              onClick={handleNavigateHome}
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold 
+                       hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg">
+              Back to Home
+            </button>
           </div>
-          ) : (
-            <>
-            {chatHistory.map((chat,index) => (
-                <div key={index} className={`mb-4 ${chat.type === 'question' ? 'text-right' : 'text-left'}`}>
-                    <div className={`inline-block max-w-[80%] p-3 rounded-lg overflow-auto scrollbar-hide
-                        ${ chat.type === 'question' ?
-                            'bg-blue-500 text-gray-600 rounded-br-none' :
-                            'bg-gray-100 text-gray-800 rounded-bl-none'
-                        }`}>
-                        <ReactMarkdown className=" prose overflow-auto scrollbar-hide" remarkPlugins={[remarkGfm, remarkBreaks , remarkFrontmatter]}
-                            rehypePlugins={[rehypeRaw]} components={{
-                                h1: ({node, ...props}) => <h1 className="text-2xl font-bold my-2" {...props}/>,
-                                h2: ({node, ...props}) => <h2 className="text-xl font-bold my-2" {...props}/>,
-                                h3: ({node, ...props}) => <h3 className="text-lg font-bold my-2" {...props}/>,
-                                p: ({node, ...props}) => <p className="my-2" {...props}/>,
-                                ul: ({node, ...props}) => <ul className="list-disc ml-4 my-2" {...props}/>,
-                                ol: ({node, ...props}) => <ol className="list-decimal ml-4 my-2" {...props}/>,
-                                li: ({node, ...props}) => <li className="my-1" {...props} /> ,
-                                blockquote: ({children}) => <blockquote style={{borderLeft: '4px solid #ccc', paddingLeft: '1em', margin: '1em 0', color: '#555', backgroundColor: '#f9f9f9', borderRadius: '5px', padding: '10px'}}>{children}</blockquote>
-                            }}>
-                           {chat.content}
-                        </ReactMarkdown>
 
-                        <p className='text-gray-400'>
-                            {chat.time}
-                        </p>
-                            
-                    </div>
+          {/* Chat Container */}
+          <div 
+            ref={chatHistoryContainer}
+            className="bg-white rounded-xl shadow-lg p-6 mb-6 h-[500px] overflow-y-auto scrollbar-hide">
+            
+            {chatHistory.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center p-6">
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 max-w-2xl shadow-md">
+                  <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
+                    Welcome to your personalised Chat-Bot!👋
+                  </h2>
+                  <p className="text-gray-600 mb-4">
+                    I'm here to help you with anything you'd like to know about yourself through the lens of your entries!
+                  </p>
+                  <p className="text-gray-500 mt-6 text-sm">
+                    Just type your question below and press Enter or click Send!
+                    <br />
+                    Note: The AI only uses the last 20 entries in order to fetch you a response.
+                  </p>
                 </div>
-            ))}
-            </>
-          )}
-          {generatingAnswer && (
-            <div className='text-left'>
-             <div className="loader w-14 aspect-[2] bg-custom-gradient bg-no-repeat bg-[length:calc(100%/3)_50%] animate-l3">
-             </div>
-            </div>
-          )}
-        </div>
+              </div>
+            ) : (
+              <>
+                {chatHistory.map((chat, index) => (
+                  <div key={index} className={`mb-4 ${chat.type === 'question' ? 'text-right' : 'text-left'}`}>
+                    <div 
+                      className={`inline-block max-w-[80%] p-4 rounded-lg ${
+                        chat.type === 'question'
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-br-none'
+                          : 'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-800 rounded-bl-none'
+                      }`}
+                    >
+                      <ReactMarkdown 
+                        className="prose max-w-none" 
+                        remarkPlugins={[remarkGfm, remarkBreaks, remarkFrontmatter]}
+                        rehypePlugins={[rehypeRaw]}
+                      >
+                        {chat.content}
+                      </ReactMarkdown>
+                      <p className={`text-sm mt-2 ${chat.type === 'question' ? 'text-gray-200' : 'text-gray-400'}`}>
+                        {chat.time}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {generatingAnswer && (
+              <div className="text-left">
+                <div className="inline-block bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
-        <form onSubmit={generateResponse} className='bg-white rounded-lg shadow-lg p-4'>
-         <div className='flex gap-2'>
-            <textarea required 
-             name="question"
-             value={question}
-             className="flex-1 border border-gray-300 rounded p-3 focus:border-blue-400 focus:ring-1 focus:ring-blue-400 resize-none" 
-             rows="2"
-             placeholder="Ask anything...."
-             onChange={(e) => setQuestion(e.target.value)}
-             onKeyDown={ (e) => {
-                if(e.key === 'Enter' && !e.shiftKey) {
+          {/* Input Form */}
+          <form onSubmit={generateResponse} className="bg-white rounded-xl shadow-lg p-4">
+            <div className="flex gap-4">
+              <textarea
+                required
+                name="question"
+                value={question}
+                className="flex-1 border border-gray-200 rounded-lg p-3 focus:border-blue-400 focus:ring-1 
+                         focus:ring-blue-400 resize-none bg-gray-50"
+                rows="1"
+                placeholder="Ask anything..."
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     generateResponse(e);
-                }
-             }} />
-             <button type='submit'
-                    disabled={generatingAnswer}
-                    className={`${ generatingAnswer ? 'opacity-50 cursor-not-allowed' : '' }`}>
-                <Send />
-             </button>
-             <button onClick={clearHistory}>
-                <Trash2 />
-             </button>
-
-         </div>
-        </form>
-    </div>
+                  }
+                }}
+              />
+              <div className="flex flex-col gap-2">
+                <button
+                  type="submit"
+                  disabled={generatingAnswer}
+                  className={`p-3 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white
+                           hover:from-blue-700 hover:to-purple-700 transition-all duration-200
+                           ${generatingAnswer ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'}`}
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={clearHistory}
+                  className="p-3 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 
+                           transition-all duration-200 hover:shadow-md"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
  );
 

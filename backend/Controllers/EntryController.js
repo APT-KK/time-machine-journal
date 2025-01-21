@@ -38,12 +38,12 @@ async function analyzeTextMood (content)  {
 
 async function createEntry (req, res) {
     try {
-        const { title , location , date , description} = req.body;
+        const { title, location, date, description } = req.body;
         const userId = req.user._id;
         
         const mood = await analyzeTextMood(description);
 
-        const entry = new  Entry({
+        const entry = new Entry({
             title,
             content: description,
             location,
@@ -55,7 +55,7 @@ async function createEntry (req, res) {
         const savedEntry = await entry.save();
         console.log('Entry saved:', savedEntry);
 
-         await User.findByIdAndUpdate(
+        await User.findByIdAndUpdate(
             userId,
             { $push: { entries: savedEntry._id } },
             { new: true }

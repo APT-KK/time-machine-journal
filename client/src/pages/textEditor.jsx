@@ -3,7 +3,7 @@ import TextEditor from '../components/TextEditor';
 
 const Entry = () => {
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main>
       <TextEditor />
     </main>
   );

@@ -1,11 +1,12 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
-import { Bold, Italic, Strikethrough, List, Quote, Link, Image, Heading, Square, CheckSquare } from 'lucide-react';
-import { useNavigate , useParams } from 'react-router-dom';
+import { Bold, Italic, Strikethrough, List, Quote, Link, Image, Heading, Square, CheckSquare, Code, Heading1, Heading2, Heading3, ListOrdered, Minus, Code2 } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+const PORT = 8000;
 
 const TextEditor = () => {
   
@@ -109,37 +110,60 @@ const TextEditor = () => {
   };
 
   const applyMarkdown = (startTag, endTag = startTag) => {
-    const textarea = document.getElementById('description');
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const before = description.substring(0, start);
-    const selectedText = description.substring(start, end).trim();
-    const after = description.substring(end);
-    
-    // first trims extra white space at end of word and then add it after if needed(de-bugging)
-    const spaceAfter = after.startsWith(' ') ? '' : ' ';
+    try {
+      const textarea = document.getElementById('editor-textarea');
+      if (!textarea) {
+        console.error('Textarea element not found');
+        return;
+      }
+      
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const before = description.substring(0, start);
+      const selectedText = description.substring(start, end).trim();
+      const after = description.substring(end);
+      
+      const spaceAfter = after.startsWith(' ') ? '' : ' ';
+      const newContent = `${before}${startTag}${selectedText}${endTag}${spaceAfter}${after}`;
+      
+      setFormData(prev => ({
+        ...prev,
+        description: newContent
+      }));
 
-    const newContent = `${before}${startTag}${selectedText}${endTag}${spaceAfter}${after}`;
-    setFormData(prev => ({
-      ...prev,
-      description: newContent
-    }));
+    } catch (error) {
+      console.error('Error applying markdown:', error);
+    }
   };
 
+  const ToolbarButton = ({ icon, onClick, tooltip }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className="p-2 hover:bg-gray-200 rounded transition-colors duration-200"
+      title={tooltip}
+    >
+      {icon}
+    </button>
+  );
 
-  const handleSubmit = async () => {
-   try {
-    if (!formData.title.trim()) {
-      alert('Please fill in the title before saving.');
-      return;
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
-    if (!formData.description.trim()) {
-      alert('Please fill in the description before saving.');
-      return;
-    }
-      const url = entryId ? `http://localhost:8000/api/entries/${entryId}` 
-      : 'http://localhost:8000/api/entries';
+    try {
+      if (!formData.title.trim()) {
+        alert('Please fill in the title before saving.');
+        return;
+      }
+      
+      if (!formData.description.trim()) {
+        alert('Please fill in the description before saving.');
+        return;
+      }
+
+      const url = entryId 
+        ? `${config.BASE_URL}/api/entries/${entryId}`
+        : `${config.BASE_URL}/api/entries`;
 
       const method = entryId ? 'PUT' : 'POST';
 
@@ -165,110 +189,158 @@ const TextEditor = () => {
   }
 };
   return (
-    <div className=" mx-auto p-8 font-sans min-h-screen bg-gradient-to-r from-[#0ED2F7] to-[#B2FEFA] ">
-     <div className="max-w-[70vw] mx-auto">
-      <div className="bg-white shadow rounded-lg p-8">
-        <div className="mb-6">
-          <label htmlFor="title" className="block text-lg font-medium text-gray-700 mb-2 p-2">
-            Title :
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title || ""}
-            onChange={handleInputChange}
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-            placeholder="Enter title..."
-          />
-        </div>
-        <div className="mb-6">
-          <label htmlFor="location" className="block text-lg font-medium text-gray-700 mb-2 p-2">
-            Location :
-          </label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            value={formData.location || ""}
-            onChange={handleInputChange}
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-            placeholder="Enter title..."
-          />
-        </div>
-        <div className="mb-6 p-2 ">
-          <label htmlFor="date" className="block text-lg font-medium text-gray-700 mb-2">
-            Date :
-          </label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value={formData.date || ""}
-            onChange={handleInputChange}
-            className="block  border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-            required
-          />
-        </div>
-        <div className="mb-6 p-2">
-          <label htmlFor="description" className="block text-lg font-medium text-gray-700 mb-2">
-            Description :
-            </label>
-          <br /> 
-          <div className="flex flex-wrap gap-2 mb-4">
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('**', '**')}><Bold size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('_', '_')}><Italic size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('~~', '~~')}><Strikethrough size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('- ')}><List size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('> ')}><Quote size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('[', '](url)')}><Link size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('![', '](image_url)')}><Image size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('# ', '')}><Heading size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('- [x] ', '')}><CheckSquare size={18} /></button>
-            <button className="p-3 bg-gray-100 hover:bg-gray-200 border text-gray-800" onClick={() => applyMarkdown('- [ ] ', '')}><Square size={18} /></button>
-
-          </div>
-          <div className="flex space-x-4">
-            <textarea
-              id="description"
-              value={formData.description || ""}
-              name="description"
-              onChange={handleInputChange}
-              className="w-1/2 h-[40vh] p-4 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-              placeholder="Enter the description..."
-            />
-            <div className="w-1/2 h-[40vh] border-gray-300 rounded-md shadow-sm bg-gray-100 p-4"
-            >
-               <ReactMarkdown className="prose" remarkPlugins={[remarkGfm, remarkBreaks , remarkFrontmatter]}
-                rehypePlugins={[rehypeRaw]} components={{
-                  h1: ({node, ...props}) => <h1 className="text-2xl font-bold my-2" {...props}/>,
-                  h2: ({node, ...props}) => <h2 className="text-xl font-bold my-2" {...props}/>,
-                  h3: ({node, ...props}) => <h3 className="text-lg font-bold my-2" {...props}/>,
-                  p: ({node, ...props}) => <p className="my-2" {...props}/>,
-                  ul: ({node, ...props}) => <ul className="list-disc ml-4 my-2" {...props}/>,
-                  ol: ({node, ...props}) => <ol className="list-decimal ml-4 my-2" {...props}/>,
-                  li: ({node, ...props}) => <li className="my-1" {...props} /> ,
-                  blockquote: ({children}) => <blockquote style={{borderLeft: '4px solid #ccc', paddingLeft: '1em', margin: '1em 0', color: '#555', backgroundColor: '#f9f9f9', borderRadius: '5px', padding: '10px'}}>{children}</blockquote>
-                }}>{description}</ReactMarkdown> 
+    <div className="min-h-screen bg-gradient-to-r from-[#FAD961] to-[#F76B1C] p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-8">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                New Journal Entry
+              </h1>
+              <p className="text-gray-600 mt-2">Express your thoughts and memories</p>
             </div>
+            <button 
+              onClick={() => navigate('/')}
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold 
+                       hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg">
+              Back to Home
+            </button>
           </div>
-        </div>
 
-        <div className="flex gap-2 justify-end"> 
-        <button
-            onClick={() => navigate('/')}
-            className="px-6 py-3 bg-yellow-300 text-black text-lg font-medium rounded-lg hover:bg-yellow-400 shadow"
-          >
-            Back to Home
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="px-6 py-3 bg-yellow-300 text-black text-lg font-medium rounded-lg hover:bg-yellow-400 shadow"
-          >
-            Save Entry
-          </button>
-         
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Title Input */}
+            <div className="group">
+              <label className="block text-lg font-medium text-gray-700 mb-2">Title</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 
+                         focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-200
+                         group-hover:border-gray-400"
+                placeholder="Give your entry a meaningful title..."
+                required
+              />
+            </div>
+
+            {/* Location Input */}
+            <div className="group">
+              <label className="block text-lg font-medium text-gray-700 mb-2">Location</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 
+                         focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-200
+                         group-hover:border-gray-400"
+                placeholder="Where are you writing from?"
+                required
+              />
+            </div>
+
+            {/* Date Input */}
+            <div className="group flex items-center gap-4">
+              <label className="text-lg font-medium text-gray-700 min-w-[60px]">Date</label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                className="w-48 px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 
+                         focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-200
+                         group-hover:border-gray-400"
+                required
+              />
+            </div>
+
+            {/* Content Editor */}
+            <div>
+              <label className="block text-lg font-medium text-gray-700 mb-2">Content</label>
+              <div className="bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-200">
+                {/* Markdown Toolbar */}
+                <div className="flex flex-wrap gap-2 p-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                  {/* Text Formatting */}
+                  <div className="flex items-center gap-1 pr-2 border-r border-gray-300">
+                    <ToolbarButton icon={<Bold size={18} />} onClick={() => applyMarkdown('**', '**')} tooltip="Bold" />
+                    <ToolbarButton icon={<Italic size={18} />} onClick={() => applyMarkdown('_', '_')} tooltip="Italic" />
+                    <ToolbarButton icon={<Strikethrough size={18} />} onClick={() => applyMarkdown('~~', '~~')} tooltip="Strikethrough" />
+                    <ToolbarButton icon={<Code size={18} />} onClick={() => applyMarkdown('`', '`')} tooltip="Inline Code" />
+                  </div>
+
+                  {/* Headers */}
+                  <div className="flex items-center gap-1 pr-2 border-r border-gray-300">
+                    <ToolbarButton icon={<Heading1 size={18} />} onClick={() => applyMarkdown('# ', '')} tooltip="Heading 1" />
+                    <ToolbarButton icon={<Heading2 size={18} />} onClick={() => applyMarkdown('## ', '')} tooltip="Heading 2" />
+                    <ToolbarButton icon={<Heading3 size={18} />} onClick={() => applyMarkdown('### ', '')} tooltip="Heading 3" />
+                  </div>
+
+                  {/* Lists */}
+                  <div className="flex items-center gap-1 pr-2 border-r border-gray-300">
+                    <ToolbarButton icon={<List size={18} />} onClick={() => applyMarkdown('- ', '')} tooltip="Bullet List" />
+                    <ToolbarButton icon={<ListOrdered size={18} />} onClick={() => applyMarkdown('1. ', '')} tooltip="Numbered List" />
+                    <ToolbarButton icon={<CheckSquare size={18} />} onClick={() => applyMarkdown('- [x] ', '')} tooltip="Task List (Checked)" />
+                    <ToolbarButton icon={<Square size={18} />} onClick={() => applyMarkdown('- [ ] ', '')} tooltip="Task List (Unchecked)" />
+                  </div>
+
+                  {/* Block Elements */}
+                  <div className="flex items-center gap-1 pr-2 border-r border-gray-300">
+                    <ToolbarButton icon={<Quote size={18} />} onClick={() => applyMarkdown('> ', '')} tooltip="Blockquote" />
+                    <ToolbarButton icon={<Minus size={18} />} onClick={() => applyMarkdown('---\n', '')} tooltip="Horizontal Rule" />
+                    <ToolbarButton icon={<Code2 size={18} />} onClick={() => applyMarkdown('```\n', '\n```')} tooltip="Code Block" />
+                  </div>
+
+                  {/* Links and Media */}
+                  <div className="flex items-center gap-1">
+                    <ToolbarButton icon={<Link size={18} />} onClick={() => applyMarkdown('[', '](url)')} tooltip="Add Link" />
+                    <ToolbarButton icon={<Image size={18} />} onClick={() => applyMarkdown('![', '](image_url)')} tooltip="Add Image" />
+                  </div>
+                </div>
+
+                {/* Text Area */}
+                <textarea
+                  id="editor-textarea"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  className="w-full p-4 min-h-[400px] rounded-b-lg focus:outline-none focus:ring-0"
+                  placeholder="Start writing your thoughts..."
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Preview Section */}
+            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Preview</h3>
+              <div className="prose max-w-none">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {formData.description || '*Your formatted text will appear here...*'}
+                </ReactMarkdown>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold 
+                         hover:bg-gray-200 transition-all duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg 
+                         font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 
+                         shadow-md hover:shadow-lg"
+              >
+                Save Entry
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

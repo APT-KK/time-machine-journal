@@ -1,11 +1,13 @@
 import React , { useEffect, useState} from 'react';
-import { Cloud, BookOpen, PenTool, Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2, TrendingUp, Lightbulb, MessageCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import config from '../config/config';
 
 const WordCloud = () => {
     const [ insights, setInsights ] = useState(null);
-    const [ activeTab, setActiveTab ] = useState('wordcloud');
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
+    const navigate = useNavigate();
 
     useEffect( () => {
         fetchInsights();
@@ -13,7 +15,7 @@ const WordCloud = () => {
 
     const fetchInsights = async () => {
         try {
-          const response = await fetch('http://localhost:8000/api/wordcloud/analysis', {
+          const response = await fetch(`${config.BASE_URL}/api/wordcloud/analysis`, {
            credentials: "include",
            method:'GET',
           });
@@ -33,35 +35,23 @@ const WordCloud = () => {
         }
     };
 
-    const getColorByValue = (value) => {
-        const colors = [
-          'bg-blue-100 hover:bg-blue-200',
-          'bg-blue-200 hover:bg-blue-300',
-          'bg-blue-300 hover:bg-blue-400',
-          'bg-blue-400 hover:bg-blue-500',
-          'bg-blue-500 hover:bg-blue-600',
-          'bg-blue-600 hover:bg-blue-700'
+      const getWordStyle = (value) => {
+        const styles = [
+          'bg-blue-100 text-blue-800 hover:bg-blue-200',
+          'bg-purple-100 text-purple-800 hover:bg-purple-200',
+          'bg-pink-100 text-pink-800 hover:bg-pink-200',
+          'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
         ];
-        const index = Math.min(Math.floor((value / 10) * colors.length), colors.length - 1);
-        return colors[index];
+        return styles[Math.floor(Math.random() * styles.length)]; //randomly chooses a style
       };
-    
-      const getTextColor = (value) => {
-        return value > 5 ? 'text-white' : 'text-gray-800';
+      
+      const getRareWordStyle = (value) => {
+        if (value > 15) return 'bg-purple-100 text-purple-800 hover:bg-purple-200';
+        if (value > 10) return 'bg-pink-100 text-pink-800 hover:bg-pink-200';
+        if (value > 5) return 'bg-rose-100 text-rose-800 hover:bg-rose-200';
+        return 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200';
       };
-    
-      const getFontSize = (value) => {
-        const sizes = [
-          'text-sm',
-          'text-base',
-          'text-lg',
-          'text-xl',
-          'text-2xl',
-          'text-3xl'
-        ];
-        const index = Math.min(Math.floor((value / 10) * sizes.length), sizes.length - 1);
-        return sizes[index];
-      }
+      
 
     if(error){
         return(
@@ -104,118 +94,105 @@ const WordCloud = () => {
         );
       }
 
-      const tabContent = {
-        wordcloud: (
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Most Used Words</h2>
-            <div className="flex flex-wrap gap-3 justify-center p-8 bg-gray-50 rounded-lg">
-              {insights.most_used_words.map(({ text, value }) => (
-                <span
-                  key={text}
-                  className={`inline-block px-4 py-2 rounded-full cursor-default transition-all duration-300 
-                  hover:scale-110 ${getColorByValue(value)} ${getTextColor(value)} ${getFontSize(value)}`}
-                >
-                  {text}
-                </span>
-              ))}
-            </div>
-          </div>
-        ),
-        themes: (
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Writing Themes</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {insights.themes.map((theme) => (
-                <div
-                  key={theme}
-                  className="p-4 bg-gray-50 rounded-lg border border-blue-100 hover:border-blue-300 transition-colors"
-                >
-                  {theme}
-                </div>
-              ))}
-            </div>
-          </div>
-        ),
-        tone: (
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Writing Tone</h2>
-            <div className="p-6 bg-gray-50 rounded-lg text-center text-xl font-medium text-gray-700">
-              {insights.tone}
-            </div>
-          </div>
-        ),
-        rare: (
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Unique Words</h2>
-            <div className="flex flex-wrap gap-3 justify-center p-8 bg-gray-50 rounded-lg">
-              {insights.rare_words.map(({ text, value }) => (
-                <span
-                  key={text}
-                  className={`inline-block px-4 py-2 rounded-full cursor-default transition-all duration-300 
-                  hover:scale-110 ${getColorByValue(value)} ${getTextColor(value)} ${getFontSize(value)}`}
-                >
-                  {text}
-                </span>
-              ))}
-            </div>
-          </div>
-        )
-      };
-
       return (
-        <div className="min-h-screen bg-gradient-to-r from-[#FAD961] to-[#F76B1C]  p-6">
+        <div className="min-h-screen bg-gradient-to-r from-[#FAD961] to-[#F76B1C] p-6">
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Journal Insights :-</h1>
-            
-            <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
-              <button
-                onClick={() => setActiveTab('wordcloud')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === 'wordcloud' 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-white text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <Cloud className="w-4 h-4" />
-                Word Cloud
-              </button>
-              <button
-                onClick={() => setActiveTab('themes')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === 'themes' 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-white text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <BookOpen className="w-4 h-4" />
-                Themes
-              </button>
-              <button
-                onClick={() => setActiveTab('tone')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === 'tone' 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-white text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <PenTool className="w-4 h-4" />
-                Writing Tone
-              </button>
-              <button
-                onClick={() => setActiveTab('rare')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === 'rare' 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-white text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <Sparkles className="w-4 h-4" />
-                Unique Words
-              </button>
-            </div>
-    
-            <div className="transition-opacity duration-200">
-              {tabContent[activeTab]}
+            <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-8">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h1 className="text-3xl mb-3 leading-relaxed font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Writing Insights
+                  </h1>
+                  <p className="text-gray-600 mt-2">Discover patterns and themes in your writing journey</p>
+                </div>
+                <button 
+                  onClick={() => navigate('/')}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold 
+                           hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                  Back to Home
+                </button>
+              </div>
+
+              <div className="space-y-8">
+                {/* Most Used Words Section */}
+                <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-blue-500" />
+                    Most Frequent Words
+                  </h2>
+                  <div className="p-8 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-lg">
+                    <div className="flex flex-wrap gap-4 justify-center items-center min-h-[200px]">
+                      {insights.most_used_words.map(({ text, value }) => (
+                        <span
+                          key={text}
+                          className={`inline-block px-6 py-3 rounded-full cursor-default transition-all duration-300 
+                          hover:scale-110 hover:shadow-md ${getWordStyle(value)}`}
+                          style={{
+                            fontSize: `${Math.max(1, Math.min(2.5, value / 10))}rem`,
+                            opacity: Math.max(0.7, Math.min(1, value / 20))
+                          }}
+                        >
+                          {text}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Themes Section */}
+                  <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+                      <Lightbulb className="w-5 h-5 text-yellow-500" />
+                      Writing Themes
+                    </h2>
+                    <div className="grid grid-cols-2 gap-4">
+                      {insights.themes.map((theme) => (
+                        <div
+                          key={theme}
+                          className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-100 
+                                   hover:border-yellow-300 transition-all duration-300 hover:shadow-md hover:scale-105"
+                        >
+                          <span className="text-gray-700 font-medium text-center block">{theme}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tone Section */}
+                  <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+                      <MessageCircle className="w-5 h-5 text-green-500" />
+                      Writing Tone
+                    </h2>
+                    <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg 
+                                hover:shadow-md transition-all duration-300 text-center">
+                      <span className="text-2xl font-medium text-gray-700">{insights.tone}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Unique Words Section */}
+                <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-purple-500" />
+                    Unique Expressions
+                  </h2>
+                  <div className="p-8 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 rounded-lg">
+                    <div className="flex flex-wrap gap-4 justify-center">
+                      {insights.rare_words.map(({ text, value }) => (
+                        <span
+                          key={text}
+                          className={`inline-block px-5 py-2.5 rounded-full cursor-default transition-all duration-300 
+                          hover:scale-110 hover:shadow-md ${getRareWordStyle(value)}`}
+                        >
+                          {text}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
