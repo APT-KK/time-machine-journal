@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Map, Calendar, Cloud, Heart, BotMessageSquare  , NotebookText} from 'lucide-react';
+import { Map, Calendar, Cloud, Heart, BotMessageSquare  , NotebookText , NotebookPen } from 'lucide-react';
 
 const Features = () => {
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ const Features = () => {
       icon: <Map className="w-12 h-12 text-primary" />,
       title: "Interactive Map",
       description: "Visualize your journey across India with location-based entries and memories.",
-      path: '/interactive-map'
+      path: '/map'
     },
     {
       icon: <Calendar className="w-12 h-12 text-primary" />,
@@ -36,17 +36,23 @@ const Features = () => {
       path: '/chat-bot'
     },
     {
-      icon: < NotebookText className="w-12 h-12 text-primary" />,
+      icon: < NotebookPen className="w-12 h-12 text-primary" />,
       title: "Journal Entry",
       description: "Write your journal entry.",
       path: '/journal-entry'
+    },
+    {
+      icon: < NotebookText className="w-12 h-12 text-primary" />,
+      title: "Display Entries",
+      description: "Display your journal entries.",
+      path: '/display-entries'
     }
   ];
 
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-12">Dash-Board:</h2>
+        <h2 className="text-3xl font-bold mb-12">Dashboard:</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
             <div

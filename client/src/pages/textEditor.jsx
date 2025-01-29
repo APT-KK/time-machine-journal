@@ -1,9 +1,14 @@
 import React from 'react';
 import TextEditor from '../components/TextEditor';
+import Navbar from '../components/Navbar';
+import { useAuth } from '../context/AuthContext';
 
 const Entry = () => {
+  const { isAuthenticated } = useAuth();
+  
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main>
+      <Navbar isAuthenticated={isAuthenticated} isHomePage={false} />
       <TextEditor />
     </main>
   );

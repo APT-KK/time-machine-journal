@@ -1,19 +1,29 @@
 const express = require('express');
 const cors = require('cors');
-const authRouter = require('./Routes/AuthRouter');
-const port = 8001;
-const app = express();
+const authRouter = require('./Routes/authRouter');
+const entryRouter = require('./Routes/entryRouter');
+const BotRouter = require('./Routes/BotRouter');;
+const wordCloudRouter = require('./Routes/wordCloudRouter');
+const mapRouter = require('./Routes/MapRouter');
+const cookieParser = require('cookie-parser');
+const port = 8000;
+const app = express(); 
+
 require('./Models/DataBase');
+
+require('dotenv').config();
+
 
 // Middlewares
 app.use(cors({
-    origin: 'http://localhost:5174',
+    origin: 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // routes
 app.get('/', (req, res) => {
@@ -23,10 +33,22 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRouter);
 
+app.use('/api/entries', entryRouter);
+
+app.use('/api/bot', BotRouter);
+
+app.use('/api/wordcloud', wordCloudRouter);
+
+app.use('/api/map', mapRouter);
+
 // Error handling
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke internally - My Bad!');
+    console.error('Error:', err);
+    res.status(err.status || 500).json({
+        success: false,
+        message: err.message || 'Internal Server Error',
+        error: process.env.NODE_ENV === 'development' ? err : {}
+    });
 });
 
 // Listen
