@@ -4,15 +4,59 @@ import rehypeRaw from 'rehype-raw';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
-import { Bold, Italic, Strikethrough, List, Quote, Link, Image, Heading, Square, CheckSquare, Code, Heading1, Heading2, Heading3, ListOrdered, Minus, Code2 } from 'lucide-react';
+import { Bold, Italic, Strikethrough, List, Quote, Link, Image, Heading, Square, CheckSquare, Code, Heading1, Heading2, Heading3, ListOrdered, Minus, Code2, Underline } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-const PORT = 8000;
+import { API_ROUTES } from '../config/config';
 
 const TextEditor = () => {
   
   const navigate = useNavigate();
   const { entryId } = useParams();
-  
+  const [error, setError] = useState('');
+
+  const getDefaultLocation = async () => {
+
+    if (!entryId && 'geolocation' in navigator) {
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        
+        const { latitude, longitude } = position.coords;
+        
+        // Reverse geo-coding through Nominatim(limited to india currently)
+        const nominatimResponse = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&countrycodes=in`,
+          
+          { headers: { 'User-Agent': 'WOC-Journal' } }
+        );
+
+        if (!nominatimResponse.ok) {
+          throw new Error('Failed to get location from Nominatim');
+        }
+
+        const nominatimData = await nominatimResponse.json();
+        
+        const locationName = nominatimData.address.city    || 
+                             nominatimData.address.town    || 
+                             nominatimData.address.village || 
+                             nominatimData.address.suburb;
+
+        if (locationName) {
+          setFormData(prev => ({ ...prev, location: locationName }));
+        }
+      } catch (error) {
+        console.error('Error getting location:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!entryId) {
+      getDefaultLocation();
+    }
+  }, []);
+
   const [formData , setFormData] = useState( () => {
     const savedData = localStorage.getItem(`draft-${entryId || 'new' }`);
     if(savedData){
@@ -22,7 +66,8 @@ const TextEditor = () => {
       title: '',
       location: '',
       date: new Date().toISOString().split('T')[0],
-      description: ''
+      description: '',
+      mood: ''
     };
 
   });
@@ -42,7 +87,7 @@ const TextEditor = () => {
 
   const fetchEntry = async () => {
     try {
-      const response = await fetch (`http://localhost:8000/api/entries/${entryId}`, {
+      const response = await fetch (API_ROUTES.ENTRY(entryId), {
         credentials: 'include',
         method: 'GET',
       });
@@ -57,7 +102,7 @@ const TextEditor = () => {
         title: entry.title, 
         location: entry.location, 
         date: new Date(entry.date).toISOString().split('T')[0],
-        description: entry.content 
+        description: entry.content,
       }
 
       setFormData(entryData);
@@ -69,37 +114,6 @@ const TextEditor = () => {
       navigate('/display-entries');
     }
   }
-  const defaultLocation = () => {
-  
-    useEffect(() => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setFormData((prev) => ({
-              ...prev,
-              location: `Lat: ${latitude}, Long: ${longitude}`
-            }));
-          },         
-          (error) => {
-            console.error("Error fetching location: ", error);
-            setFormData((prev) => ({
-              ...prev,
-              location: 'Unable to fetch location'
-            }));         
-           }
-        );
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          location: 'Geolocation is not supported by this browser.'
-        }));     
-       }
-    } , []);
-  
-  };
-
-  defaultLocation();
 
   const handleInputChange = (e) => {
     const {name , value} = e.target;
@@ -162,50 +176,58 @@ const TextEditor = () => {
       }
 
       const url = entryId 
-        ? `${config.BASE_URL}/api/entries/${entryId}`
-        : `${config.BASE_URL}/api/entries`;
+        ? API_ROUTES.ENTRY(entryId)
+        : API_ROUTES.ENTRIES;
 
       const method = entryId ? 'PUT' : 'POST';
 
-      const response = await fetch (url, {
+      const response = await fetch(url, {
         method,
         credentials: 'include',
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify( formData ),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        console.error('Failed to save the entry');
+        throw new Error('Failed to save the entry');
       }
 
       localStorage.removeItem(`draft-${entryId || 'new'}`);
       navigate('/display-entries');
 
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Failed to save the entry . Please try again!');
-  }
-};
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to save the entry. Please try again!');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#FAD961] to-[#F76B1C] p-6">
       <div className="max-w-6xl mx-auto">
         <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-8">
           <div className="flex justify-between items-center mb-8">
             <div>
+              { entryId ? (
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Edit Journal Entry
+              </h1>
+              ) : (
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 New Journal Entry
               </h1>
+              )}
+
               <p className="text-gray-600 mt-2">Express your thoughts and memories</p>
             </div>
-            <button 
-              onClick={() => navigate('/')}
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold 
-                       hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg">
-              Back to Home
-            </button>
           </div>
+
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title Input */}
@@ -254,7 +276,7 @@ const TextEditor = () => {
                 required
               />
             </div>
-
+            
             {/* Content Editor */}
             <div>
               <label className="block text-lg font-medium text-gray-700 mb-2">Content</label>
@@ -291,9 +313,8 @@ const TextEditor = () => {
                     <ToolbarButton icon={<Code2 size={18} />} onClick={() => applyMarkdown('```\n', '\n```')} tooltip="Code Block" />
                   </div>
 
-                  {/* Links and Media */}
+                  {/* Media */}
                   <div className="flex items-center gap-1">
-                    <ToolbarButton icon={<Link size={18} />} onClick={() => applyMarkdown('[', '](url)')} tooltip="Add Link" />
                     <ToolbarButton icon={<Image size={18} />} onClick={() => applyMarkdown('![', '](image_url)')} tooltip="Add Image" />
                   </div>
                 </div>
@@ -313,9 +334,12 @@ const TextEditor = () => {
 
             {/* Preview Section */}
             <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-              <h3 className="text-lg font-medium text-gray-700 mb-4">Preview</h3>
-              <div className="prose max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              <h3 className="text-lg font-medium text-gray-700 mb-4 break-words">Preview</h3>
+              <div className="prose max-w-none break-words">
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm, remarkBreaks, remarkFrontmatter]}
+                  rehypePlugins={[rehypeRaw]}
+                >
                   {formData.description || '*Your formatted text will appear here...*'}
                 </ReactMarkdown>
               </div>

@@ -1,98 +1,125 @@
-import React  , {useState} from "react";
-import { Link ,  Navigate , useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { UserPlus, Mail, Lock } from 'lucide-react';
+import { API_ROUTES } from '../config/config';
+
 const PORT = 8000;
 
 const Signup = () => {
-const [username, setUsername] = useState("");
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-const [error, setError] = useState("");
-const {setIsAuthenticated} = useAuth();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState("");
+  const { setIsAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-const navigate = useNavigate();
-
-const handleSignUp = async (e) => {
-  e.preventDefault();
-  setError("");
-  
-  try {
-    const response = await fetch(`http://localhost:${PORT}/api/auth/signup`, {
-      method: "POST",
-      headers: {
-         "Content-Type": "application/json",
-         "Accept": "application/json"
-       },
-      credentials : 'include',
-      body: JSON.stringify({ username, email, password })
-    });
-
-    const data = await response.json();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
     
-    //Added Error Handling 
-    if ( response.status === 409) {
-      setError(data.message || "UserName or Email already exists Please try again!");
-    } else if (!response.ok) {
-      setError(data.message || "Sign Up failed. Please try again!");
-     } else {
-      setIsAuthenticated(true);
-      navigate("/", {replace: true});
-     }
+    try {
+      const response = await fetch(API_ROUTES.AUTH.SIGNUP, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          username: formData.name,
+          email: formData.email,
+          password: formData.password
+        }),
+      });
 
-  } catch (error) {
-    console.error("Signup failed:", error);
-  }
- };
+      const data = await response.json();
+      
+      if (response.status === 409) {
+        setError(data.message || "Username or Email already exists. Please try again!");
+      } else if (!response.ok) {
+        setError(data.message || "Sign up failed. Please try again!");
+      } else {
+        setIsAuthenticated(true);
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Signup failed:", error);
+      setError("An unexpected error occurred. Please try again.");
+    }
+  };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <h1 className="mb-4 text-2xl font-bold text-center text-gray-700">Sign up:</h1>
-        {/*Error handling*/}
+    <div className="min-h-screen bg-gradient-to-r from-[#FAD961] to-[#F76B1C] flex items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-md bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-6 sm:p-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Create Account
+          </h1>
+          <p className="text-gray-600 mt-2 text-sm sm:text-base">Begin your journaling adventure</p>
+        </div>
+
         {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded text-sm">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSignUp}>
-          <div className="mb-4">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200">
+            <div className="bg-white h-full flex items-center px-2 sm:px-3 border-r border-gray-300">
+              <UserPlus className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+            </div>
             <input
               type="text"
               placeholder="Username"
-              className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              className="w-full py-2 sm:py-3 px-3 sm:px-4 text-sm focus:outline-none bg-white"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </div>
-          <div className="mb-4">
+
+          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200">
+            <div className="bg-white h-full flex items-center px-2 sm:px-3 border-r border-gray-300">
+              <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+            </div>
             <input
               type="email"
               placeholder="Email"
-              className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              className="w-full py-2 sm:py-3 px-3 sm:px-4 text-sm focus:outline-none bg-white"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </div>
-          <div className="mb-6">
+
+          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200">
+            <div className="bg-white h-full flex items-center px-2 sm:px-3 border-r border-gray-300">
+              <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+            </div>
             <input
               type="password"
               placeholder="Password"
-              className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              className="w-full py-2 sm:py-3 px-3 sm:px-4 text-sm focus:outline-none bg-white"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
           </div>
+
           <button
             type="submit"
-            className="w-full px-3 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300" >
-            Signup
+            className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold 
+                     hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg 
+                     transform hover:-translate-y-0.5"
+          >
+            Sign Up
           </button>
         </form>
-        <p className="mt-4 text-sm text-center text-gray-600">
+
+        <p className="mt-6 sm:mt-8 text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Login
+          <Link to="/login" className="text-blue-600 hover:text-blue-800 font-semibold">
+            Log In
           </Link>
         </p>
       </div>

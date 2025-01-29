@@ -22,10 +22,10 @@ async function getWordCloudAnalysis (req,res) {
                     role:"system",
                     content: `You are a text analysis expert. Analyze the given journal entries and provide the following insights:
                     1. Most Used Words: Extract the most frequently used significant words that represent key themes, emotions, and topics. 
-                       Exclude common words and focus on meaningful terms. Limit to 40 words.
+                       Exclude common words and focus on meaningful terms. Limit to 5 - 7 words.
                     2. Writing Themes: Identify the primary themes or topics present in the journal entries. Limit to 6 themes.
                     3. Writing Tone or Style: Analyze the overall tone or style of the entries.
-                    4. Rare or Unique Words: Identify rare or unique words that are not commonly found in everyday language. Limit to 15 words.
+                    4. Rare or Unique Words: Identify rare or unique words that are not commonly found in everyday language . Limit to 5-7 words.
 
                     Return the output as a JSON object structured as follows:
                     {

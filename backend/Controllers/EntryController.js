@@ -8,52 +8,75 @@ const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY 
 });
 
-async function analyzeTextMood (content)  {
+async function analyzeTextMood(content) {
     try {
         const completion = await groq.chat.completions.create({
-            messages: [ 
+            messages: [
                 {
                     role: "system",
-                    content:"1) You are an emotional analysis assistant specialized in detecting moods and emotional states from text. Your primary function is to analyze the emotional undertones in user messages.\n" +
-                            "2) You must respond with exactly one word that best captures the dominant emotion or mood. Choose from emotions like: happy, sad, angry, excited, nervous, confused, neutral, etc.\n" +
-                            "3) If multiple emotions are present, identify the strongest or most prominent one.\n" +
-                            "4) If the emotional state is unclear or ambiguous, default to 'neutral'."
+                    content: "You are an emotional analysis assistant. Analyze the text and return ONLY a JSON object with:\n" +
+                            "1. mood: One word that best captures the dominant emotion (Happy, Sad, Excited, Anxious, Calm, Neutral)\n" +
+                            "2. confidence: A number between 0.1 and 1.0 indicating how confident you are in this assessment\n" +
+                            "Format: {\"mood\": \"happy\", \"confidence\": 0.8}"
                 },
                 {
                     role: "user",
-                    content: `Analyze the following text : "${content}"`
+                    content: `Analyze the following text: "${content}"`
                 },
             ],
             model: "llama-3.3-70b-versatile",
+            temperature: 0.3, 
+            max_tokens: 100
         });
 
-            return completion.choices[0]?.message?.content?.trim() || 'neutral' 
-      
+        let analysisText = completion.choices[0]?.message?.content || '';
+        
+        // Clean up the response to ensure it's valid JSON
+        analysisText = analysisText.trim();
+        if (!analysisText.startsWith('{')) {
+            throw new Error('Invalid JSON format');
+        }
+
+        const analysis = JSON.parse(analysisText);
+        
+        // Validate the parsed object
+        if (!analysis.mood || typeof analysis.confidence !== 'number') {
+            throw new Error('Invalid analysis format');
+        }
+
+        return {
+            mood: analysis.mood,
+            confidence: analysis.confidence
+        };
 
     } catch (error) {
         console.error('Error in analyzeTextMood:', error);
-        return 'neutral';
+        return { mood: 'neutral', confidence: 0.5 };
     }
-};
+}
 
 async function createEntry (req, res) {
     try {
         const { title, location, date, description } = req.body;
         const userId = req.user._id;
+
+        if(!title) {
+            return res.status(400).json({message: 'Title is required'});
+        }
         
-        const mood = await analyzeTextMood(description);
+        const moodAnalysis = await analyzeTextMood(description);
 
         const entry = new Entry({
             title,
             content: description,
             location,
             date,
-            mood,
+            mood: moodAnalysis.mood,
+            confidence: moodAnalysis.confidence,
             userId
         });
 
         const savedEntry = await entry.save();
-        console.log('Entry saved:', savedEntry);
 
         await User.findByIdAndUpdate(
             userId,
@@ -65,6 +88,7 @@ async function createEntry (req, res) {
             message: 'Entry created successfully',
             entry: savedEntry
         });
+
     } catch (error) {
         console.error('Error in createEntry:', error);
         res.status(500).json({
@@ -139,7 +163,11 @@ async function updateEntry (req,res) {
         const userId = req.user._id;
         const { title, date , location , description } = req.body;
 
-        const mood = await analyzeTextMood(description);
+        if(!title){
+            return res.status(400).json({message: 'Title is required'});
+        }
+
+        const moodAnalysis = await analyzeTextMood(description);
 
         const entry = await Entry.findOneAndUpdate(
             { _id: id , userId},
@@ -148,7 +176,9 @@ async function updateEntry (req,res) {
                 content: description,
                 location,
                 date,
-                mood
+                mood: moodAnalysis.mood,
+                confidence: moodAnalysis.confidence,
+                userId
             },
             {new:true}
         ); 
@@ -166,10 +196,12 @@ async function updateEntry (req,res) {
         res.status(500).json({ message: `Internal server error: ${error.message}` });
     }
 }
+
 module.exports = {
     createEntry,
     getEntries,
     getEntryById,
     deleteEntry,
-    updateEntry
+    updateEntry,
+    analyzeTextMood
 };

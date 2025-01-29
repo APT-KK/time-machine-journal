@@ -1,12 +1,12 @@
 const express = require('express');
-const { Signup , login , logout} = require('../Controllers/authController');
-const  verifyToken  = require('../Middlewares/authMiddleware');
+const { Signup , login , logout, verifyAuth } = require('../Controllers/authController');
+const { authenticateToken } = require('../Middleware/authMiddleware');
 
 const router = express.Router();
 
 router.post('/signup' , Signup);
 router.post('/login' , login);
 router.post('/logout' , logout);
-router.get('/verify' , verifyToken , (req,res) => res.json({ isAuthenticated : true}));
+router.get('/verify' , authenticateToken, verifyAuth);
 
 module.exports = router;
