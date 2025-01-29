@@ -1,12 +1,6 @@
-node_modules/
+backend/node_modules/
+client/node_modules/
 dist/
 build/
 .env
-.DS_Store
-*.log
-coverage/
 .vscode/
-woc-project/
-package-lock.json
-package.json
-.env
