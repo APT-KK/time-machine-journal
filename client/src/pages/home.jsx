@@ -1,7 +1,7 @@
 import React from 'react';
 import Hero from '../components/hero';
 import Features from '../components/Features';
-import CallToAction from '../components/CallToAction';
+import CallToAction from '../components/callToAction';
 import Default from '../components/Default';
 import Navbar from '../components/Navbar'; 
 import { useAuth } from '../context/AuthContext';
