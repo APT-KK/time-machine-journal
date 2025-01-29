@@ -127,7 +127,13 @@ const EntryView = () => {
         <div className="max-w-4xl mx-auto">
           <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg p-8">
             <div className="flex justify-between items-start mb-8">
-              <h1 className="text-3xl font-bold text-gray-800 break-words">{entry.title}</h1>
+              <div className="bg-white p-6 rounded-lg shadow-lg max-w-[80%]">
+                <div className="bg-white/90 backdrop-blur-sm max-w-[80%]">
+                  <h2 className="text-2xl font-bold mb-4 break-words overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 bg-white/90 backdrop-blur-sm">
+                    {entry.title}
+                  </h2>
+                </div>
+              </div>
               <div className="flex gap-4">
                 <button
                   onClick={handleEdit}

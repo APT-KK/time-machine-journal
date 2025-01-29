@@ -101,8 +101,12 @@ const MoodTracking = () => {
                       navigate(`/entry/${entry._id}`);
                     }}
                   >
-                    <div className="flex  flex-col justify-between items-start mb-4">
-                     <h2 className="text-2xl font-semibold text-gray-800 break-words">{entry.title}</h2>
+                    <h3 className="text-xl font-semibold mb-2 break-words overflow-x-auto max-w-[300px] scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+                      style={{
+                        backgroundColor: entry.mood ? moodColors[entry.mood]?.light || moodColors.Neutral.light : moodColors.Neutral.light
+                      }}>
+                      {entry.title}
+                    </h3>
                     <div className="flex gap-3 text-sm text-gray-600 mb-4">
                       <span className="flex items-center gap-1 break-all">
                         <MapPin className="w-4 h-4 flex-shrink-0" />
@@ -124,7 +128,6 @@ const MoodTracking = () => {
                         <Heart className="w-4 h-4" />
                         {entry.mood || 'Neutral'}
                       </span>
-                    </div>
                     </div>
                    <div className="prose max-w-none break-words">
                       <ReactMarkdown 

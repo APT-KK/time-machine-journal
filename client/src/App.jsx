@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import Home from './pages/home';
 import Login from './pages/login';
 import Signup from './pages/signup';
 import Entry from './pages/textEditor';
@@ -10,6 +9,7 @@ import WordCloud from './pages/WordClouds';
 import InteractiveMap from './pages/InteractiveMap';
 import TimeTravelView from './pages/TimeTravelView';
 import EntryView from './pages/EntryView';
+import Home from './pages/home';
 
 function App() {
 

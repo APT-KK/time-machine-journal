@@ -111,7 +111,9 @@ const DisplayEntries = () => {
                   <div key={entry._id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="text-xl font-semibold text-gray-800 break-words">{entry.title}</h3>
+                        <h3 className="text-xl font-semibold text-gray-800 break-words overflow-x-auto max-w-[300px] scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 bg-white">
+                          {entry.title}
+                        </h3>
                         <div className="flex gap-3 text-sm text-gray-600 mt-2">
                           <span className="flex items-center gap-1 break-all">
                             <MapPin className="w-4 h-4 flex-shrink-0" />
